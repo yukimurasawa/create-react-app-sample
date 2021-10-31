@@ -13,7 +13,6 @@ module.exports = {
     "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:@typescript-eslint/recommended", // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:react/recommended", // https://github.com/yannickcr/eslint-plugin-react
     "plugin:react-hooks/recommended", // https://www.npmjs.com/package/eslint-plugin-react-hooks
     "plugin:jest/recommended", // https://github.com/jest-community/eslint-plugin-jest
@@ -34,7 +33,7 @@ module.exports = {
     project: ["tsconfig.json"],
     sourceType: "module"
   },
-  plugins: ["react", "@typescript-eslint"],
+  plugins: ["react", "@typescript-eslint", "prettier"],
   rules: {
     "import/no-extraneous-dependencies": [
       // storybook, tests の package は development でしか使わないので
@@ -54,7 +53,8 @@ module.exports = {
         extensions: ["tsx"]
       }
     ],
-    "react/prop-types": "off" // JSで記載する時は props の型の validation があったほうが良さそうだが、typescript は props の型指定を明示的に行うので必須では無い
+    "react/prop-types": "off", // JSで記載する時は props の型の validation があったほうが良さそうだが、typescript は props の型指定を明示的に行うので必須では無い
+    "no-use-before-define": "off"
   },
   overrides: [
     {
@@ -67,6 +67,18 @@ module.exports = {
             args: "none" // 引数に関しては、使用しないケースが存在するのでこちらは警告は出さない
           }
         ]
+      }
+    },
+    {
+      files: ["**/*.stories.tsx", "src/stories/*.tsx"], // storybookが立ち上がらないためeslintを適応しないようにする(本番でやるときは考える)))
+      rules: {
+        "react/jsx-props-no-spreading": "off", // 利便性のため、Storybook ではスプレッド演算子 OK とする
+        "import/extensions": "off", // 拡張子が違う同じファイル名のコンポーネントを import することがあるため
+        "prettier/prettier": "off",
+        "react/require-default-props": "off",
+        "react/no-unescaped-entities": "off",
+        "import/prefer-default-export": "off",
+        "@typescript-eslint/ban-types": "off"
       }
     }
   ]
