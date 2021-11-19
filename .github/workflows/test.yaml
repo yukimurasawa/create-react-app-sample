@@ -1,0 +1,28 @@
+name: deployment
+# ref: https://docs.github.com/ja/free-pro-team@latest/actions/managing-workflow-runs/manually-running-a-workflow
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: "Environment to release（dev/prod）"
+        required: true
+        default: "dev"
+env: 
+  DEPLOY_ENV: ${{ github.event.inputs.deploy_env }}
+jobs:
+  deploy:
+    name: Deploy front application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Warning: 一番最初のステップに持ってくると、なぜか Error: No such file or directory になるので注意
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2 # ref: https://github.com/marketplace/actions/setup-node-js-environment
+        with:
+          node-version: "14" # 現時点（2020/1/15時点）での推奨版を指定。ref: https://nodejs.org/ja/
+      - run: npm install
+      - name: Build
+        shell: bash
+        run: |
+          npm run build
